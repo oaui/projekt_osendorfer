@@ -44,7 +44,7 @@ def make_tweet(text, time, lat, lon):
     return tweet
 
 
-def tweet_words(tweet: dict) -> list:
+def tweet_words(tweet: dict):
     """Return a list of the words in the text of a tweet."""
     return extract_words(tweet["text"])
 
@@ -82,7 +82,7 @@ def extract_words(text) -> list:
     >>> extract_words("paperclips! they're so awesome, cool, & useful!")
     ['paperclips', 'they', 're', 'so', 'awesome', 'cool', 'useful']
     """
-    text = text.replace("#", " ")
+    text = text.replace("#", " ").replace(".", " ").replace(",", " ")
     for char in text:
         if char not in ascii_letters:
             text = text.replace(char, " ")
@@ -106,19 +106,17 @@ def make_sentiment(value):
     >>> sentiment_value(make_sentiment(0.0))
     0.0
     """
-    assert value is None or -1 <= value <= 1, "Illegal value"
-    raise NotImplementedError("make_sentiment is not implemented yet")
+    return value
 
 
 def has_sentiment(s):
     """Return whether sentiment s has a value."""
-    raise NotImplementedError("has_sentiment is not implemented yet")
+    return s["value"] is not None
 
 
 def sentiment_value(s):
     """Return the value of a sentiment s."""
-    assert has_sentiment(s), "No sentiment value"
-    raise NotImplementedError("sentiment_value is not implemented yet")
+    return s["value"]
 
 
 def get_word_sentiment(word):
