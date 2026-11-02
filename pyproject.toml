@@ -1,0 +1,16 @@
+[project]
+name = "sentiment-map"
+version = "0.1.0"
+description = "Local Python environment for the sentiment-map course project"
+requires-python = ">=3.12,<3.13"
+dependencies = []
+
+[tool.uv]
+package = false
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]
+
+[tool.ruff.lint.per-file-ignores]
+# These names are supplied for the student implementations and doctests.
+"trends.py" = ["F401"]
