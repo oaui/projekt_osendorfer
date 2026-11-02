@@ -43,6 +43,7 @@ def make_tweet(text, time, lat, lon):
 
     return tweet
 
+
 def tweet_words(tweet: dict) -> list:
     """Return a list of the words in the text of a tweet."""
     return extract_words(tweet["text"])
@@ -50,12 +51,12 @@ def tweet_words(tweet: dict) -> list:
 
 def tweet_time(tweet):
     """Return the datetime that represents when the tweet was posted."""
-    raise NotImplementedError("tweet_time is not implemented yet")
+    return tweet["time"]
 
 
 def tweet_location(tweet):
     """Return a position (see geo.py) that represents the tweet's location."""
-    raise NotImplementedError("tweet_location is not implemented yet")
+    return make_position(tweet["latitude"], tweet["longitude"])
 
 
 def tweet_string(tweet):
