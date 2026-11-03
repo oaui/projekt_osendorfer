@@ -106,7 +106,7 @@ def make_sentiment(value):
     >>> sentiment_value(make_sentiment(0.0))
     0.0
     """
-    return value
+    return {"value": value}
 
 
 def has_sentiment(s):
@@ -155,7 +155,14 @@ def analyze_tweet_sentiment(tweet):
     >>> has_sentiment(analyze_tweet_sentiment(no_sentiment))
     False
     """
-    raise NotImplementedError("analyze_tweet_sentiment is not implemented yet")
+    values =[]
+    for word in tweet_words(tweet):
+        s = get_word_sentiment(word)
+        if has_sentiment(s):
+            values.append(sentiment_value(s))
+    if not values or len(values) == 0:
+        return make_sentiment(None)
+    return make_sentiment(sum(values) / len(values))
 
 
 # Milestone 3: The Geometry of Maps
