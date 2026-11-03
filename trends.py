@@ -262,7 +262,17 @@ def find_closest_state(tweet, state_centers):
     >>> find_closest_state(ny, us_centers)
     'NJ'
     """
-    raise NotImplementedError("find_closest_state is not implemented yet")
+    location = tweet_location(tweet)
+    closest_state = None
+    closest_distance = None
+
+    for name, center in state_centers.items():
+        distance = geo_distance(location, center)
+        if closest_distance is None or distance < closest_distance:
+            closest_state = name
+            closest_distance = distance
+
+    return closest_state
 
 
 def group_tweets_by_state(tweets):
@@ -281,7 +291,18 @@ def group_tweets_by_state(tweets):
     >>> tweet_string(ca_tweets[0])
     '"Welcome to San Francisco" @ (38, -122)'
     """
-    raise NotImplementedError("group_tweets_by_state is not implemented yet")
+    centers = {}
+    for name, polygons in us_states.items():
+        centers[name] = find_center(polygons)
+
+    groups = {}
+    for tweet in tweets:
+        state = find_closest_state(tweet, centers)
+        if state not in groups:
+            groups[state] = []
+        groups[state].append(tweet)
+
+    return groups
 
 
 def average_sentiments(tweets_by_state):
@@ -310,8 +331,16 @@ def average_sentiments(tweets_by_state):
     >>> average_sentiments({})
     {}
     """
-    raise NotImplementedError("average_sentiments is not implemented yet")
-
+    averages = {}
+    for state, tweets in tweets_by_state.items():
+        values = []
+        for tweet in tweets:
+            s = analyze_tweet_sentiment(tweet)
+            if has_sentiment(s):
+                values.append(sentiment_value(s))
+        if values:
+            averages[state] = sum(values) / len(values)
+    return averages
 
 # Milestone 5: A Finer Grid
 
@@ -332,7 +361,9 @@ def find_cell(position, size):
     >>> find_cell(make_position(40.0, -74.0), 2)
     (20, -37)
     """
-    raise NotImplementedError("find_cell is not implemented yet")
+    row = int(latitude(position) // size)
+    col = int(longitude(position) // size)
+    return (row, col)
 
 
 def group_tweets_by_cell(tweets, size):
@@ -352,7 +383,13 @@ def group_tweets_by_cell(tweets, size):
     >>> len(grouped[(37, -123)])
     2
     """
-    raise NotImplementedError("group_tweets_by_cell is not implemented yet")
+    cells = {}
+    for tweet in tweets:
+        cell = find_cell(tweet_location(tweet), size)
+        if cell not in cells:
+            cells[cell] = []
+        cells[cell].append(tweet)
+    return cells
 
 
 # Additions
@@ -368,7 +405,18 @@ def most_talkative_state(term):
     >>> most_talkative_state('sandwich')
     'CA'
     """
-    raise NotImplementedError("most_talkative_state is not implemented yet")
+    tweets = load_tweets(make_tweet, term)
+    by_state = group_tweets_by_state(tweets)
+
+    best_state = None
+    best_count = 0
+    for state in sorted(by_state):
+        count = len(by_state[state])
+        if count > best_count:
+            best_state = state
+            best_count = count
+
+    return best_state
 
 
 def group_tweets_by_hour(tweets):
@@ -397,7 +445,15 @@ def group_tweets_by_hour(tweets):
     >>> sum(len(tweets) for tweets in group_tweets_by_hour([]).values())
     0
     """
-    raise NotImplementedError("group_tweets_by_hour is not implemented yet")
+    by_hour = {}
+    for hour in range(24):
+        by_hour[hour] = []
+
+    for tweet in tweets:
+        hour = tweet_time(tweet).hour
+        by_hour[hour].append(tweet)
+
+    return by_hour
 
 
 if __name__ == "__main__":
