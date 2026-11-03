@@ -168,7 +168,7 @@ def analyze_tweet_sentiment(tweet):
 # Milestone 3: The Geometry of Maps
 
 
-def find_centroid(polygon):
+def find_centroid(polygon: list):
     """Find the centroid of a polygon.
 
     http://en.wikipedia.org/wiki/Centroid#Centroid_of_polygon
@@ -188,7 +188,23 @@ def find_centroid(polygon):
     >>> find_centroid([p1, p2, p1])
     (1, 2, 0)
     """
-    raise NotImplementedError("find_centroid is not implemented yet")
+    area_sum = 0       # Summe der cross-Terme (= 2 * Fläche)
+    cx_sum = 0
+    cy_sum = 0
+
+    for i in range(len(polygon) - 1):
+        x0, y0 = latitude(polygon[i]), longitude(polygon[i])
+        x1, y1 = latitude(polygon[i + 1]), longitude(polygon[i + 1])
+        cross = x0 * y1 - x1 * y0
+        area_sum += cross
+        cx_sum += (x0 + x1) * cross
+        cy_sum += (y0 + y1) * cross
+
+    if area_sum == 0:
+        return latitude(polygon[0]), longitude(polygon[0]), 0
+
+    area = area_sum / 2
+    return (cx_sum / (6 * area)), (cy_sum / (6 * area)), abs(area)
 
 
 def find_center(polygons):
@@ -212,7 +228,17 @@ def find_center(polygons):
     >>> round(longitude(hi), 5)
     -156.21763
     """
-    raise NotImplementedError("find_center is not implemented yet")
+    total_area = 0
+    lat_sum = 0
+    lon_sum = 0
+
+    for polygon in polygons:
+        lat, lon, area = find_centroid(polygon)
+        total_area += area
+        lat_sum += lat * area
+        lon_sum += lon * area
+
+    return make_position(lat_sum / total_area, lon_sum / total_area)
 
 
 # Milestone 4: The Mood of the Nation
